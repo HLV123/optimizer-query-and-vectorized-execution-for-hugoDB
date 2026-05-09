@@ -1,0 +1,264 @@
+HUGO_STATS_V1
+collections 1
+collection megadata
+total_rows 254
+total_bytes 155594
+page_count 38
+avg_row_size 612
+n_columns 17
+col name
+col_total_rows 254
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 11 Trịnh Thị Ngọc
+top_k 4 Sam Lopez
+top_k 1 Đặng Thị Giang
+top_k 9 Grace Jackson
+top_k 9 Jack Wilson
+top_k 7 Olivia Hall
+top_k 6 Nguyễn Văn An
+top_k 9 Dương Thị Lan
+top_k 5 Lý Văn Minh
+top_k 11 Peter Young
+col age
+col_total_rows 254
+col_null_count 0
+col_distinct 48
+col_min 18
+col_max 65
+col_avg 42.0394
+col_has_histogram 1
+histogram_bounds 18 19 22 24 25 26 27 28 30 31 34 35 37 38 39 41 42 43 45 46 47 48 50 52 54 55 57 58 60 61 62 64 65
+histogram_counts 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 37
+col_n_top_k 0
+col city
+col_total_rows 254
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 15 Singapore
+top_k 16 New York
+top_k 16 Toronto
+top_k 13 Hà Nội
+top_k 1 Paris
+top_k 8 Cần Thơ
+top_k 22 Tokyo
+top_k 16 Quy Nhơn
+top_k 11 HCM
+top_k 13 Sydney
+col department
+col_total_rows 254
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 17 Operations
+top_k 25 Product
+top_k 16 Research
+top_k 24 Marketing
+top_k 22 Legal
+top_k 19 HR
+top_k 11 Sales
+top_k 2 QA
+top_k 21 Data
+top_k 22 Support
+col salary
+col_total_rows 254
+col_null_count 0
+col_distinct 246
+col_min 500
+col_max 6701.45
+col_avg 2481.25
+col_has_histogram 1
+histogram_bounds 500 500 635.61 838.1 1079 1179.73 1285.4 1421.46 1553.29 1633.38 1771.32 1840.56 1940.52 1997.7 2154.92 2224.61 2330.58 2454.77 2591.39 2756.3 2938.49 3024.22 3247.02 3353.51 3425.95 3496.83 3606.23 3690.12 3817.22 4035.76 4257.92 4517.21 6701.45
+histogram_counts 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 37
+col_n_top_k 0
+col level
+col_total_rows 254
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 7
+top_k 34 director
+top_k 36 vp
+top_k 44 senior
+top_k 41 principal
+top_k 31 junior
+top_k 32 mid
+top_k 36 lead
+col status
+col_total_rows 254
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 5
+top_k 49 on_leave
+top_k 45 inactive
+top_k 47 terminated
+top_k 57 probation
+top_k 56 active
+col score
+col_total_rows 254
+col_null_count 0
+col_distinct 98
+col_min 0
+col_max 100
+col_avg 48.2165
+col_has_histogram 1
+histogram_bounds 0 3 6 8 9 15 17 19 21 26 30 32 35 36 40 43 46 49 52 56 60 64 67 71 75 77 80 84 87 90 93 96 100
+histogram_counts 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 37
+col_n_top_k 0
+col active
+col_total_rows 254
+col_null_count 254
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 0
+col years_exp
+col_total_rows 254
+col_null_count 0
+col_distinct 46
+col_min 0
+col_max 46
+col_avg 19.5118
+col_has_histogram 1
+histogram_bounds 0 0 0 0 2 3 5 6 8 9 10 12 13 15 17 17 19 20 21 23 25 27 28 29 30 32 34 35 36 38 40 42 46
+histogram_counts 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 37
+col_n_top_k 0
+col id
+col_total_rows 254
+col_null_count 0
+col_distinct 254
+col_min 1
+col_max 254
+col_avg 127.5
+col_has_histogram 1
+histogram_bounds 1 7 15 23 31 39 47 55 63 71 79 87 95 103 111 119 127 134 142 150 158 166 174 182 190 198 206 214 222 230 238 246 254
+histogram_counts 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 7 37
+col_n_top_k 0
+col email
+col_total_rows 161
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 1 dang.thi.giang647@company.vn
+top_k 1 jack.wilson101@company.vn
+top_k 1 trinh.thi.ngoc680@company.vn
+top_k 1 trinh.thi.ngoc955@company.vn
+top_k 1 olivia.hall640@company.vn
+top_k 1 jack.wilson609@company.vn
+top_k 1 nguyen.van.an568@company.vn
+top_k 1 duong.thi.lan98@company.vn
+top_k 1 olivia.hall723@company.vn
+top_k 1 ly.van.minh415@company.vn
+col rating
+col_total_rows 40
+col_null_count 0
+col_distinct 29
+col_min 1
+col_max 4.9
+col_avg 2.86
+col_has_histogram 1
+histogram_bounds 1 1 1.1 1.3 1.4 1.4 1.6 1.7 1.8 1.8 1.8 1.9 2 2.4 2.4 2.5 2.6 2.7 2.9 3.1 3.3 3.5 3.6 3.8 4 4.1 4.2 4.2 4.3 4.3 4.4 4.7 4.9
+histogram_counts 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 9
+col_n_top_k 0
+col bio
+col_total_rows 49
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 13 Team lead managing cross-functional product teams
+top_k 7 Fresh graduate passionate about AI and machine learning
+top_k 2 QA engineer building automated testing frameworks
+top_k 4 Full-stack engineer specializing in React and Node.js
+top_k 5 Senior developer with 10+ years experience in distributed systems
+top_k 3 DevOps expert automating CI/CD pipelines with Docker and K8s
+top_k 3 Data scientist working on recommendation algorithms
+top_k 6 Security researcher specializing in vulnerability assessment
+top_k 5 UX designer focused on accessible and inclusive interfaces
+top_k 1 Product manager driving roadmap for enterprise SaaS platform
+col tags
+col_total_rows 113
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 8
+top_k 11 intern
+top_k 19 remote
+top_k 8 contractor
+top_k 18 onsite
+top_k 13 mentor
+top_k 13 fulltime
+top_k 15 vip
+top_k 16 hybrid
+col project
+col_total_rows 76
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 7 Hugo DB
+top_k 1 Cosmos
+top_k 7 Phoenix
+top_k 4 Zen
+top_k 3 Titan
+top_k 4 Project Alpha
+top_k 11 Project Gamma
+top_k 7 Eclipse
+top_k 8 Project Beta
+top_k 6 Atlas
+col hire_date
+col_total_rows 29
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 1 2019-08-03
+top_k 1 2021-03-25
+top_k 1 2020-02-17
+top_k 1 2015-09-15
+top_k 1 2023-06-10
+top_k 1 2015-09-04
+top_k 1 2015-05-17
+top_k 1 2021-02-20
+top_k 1 2025-02-14
+top_k 1 2015-10-04
+end_collection

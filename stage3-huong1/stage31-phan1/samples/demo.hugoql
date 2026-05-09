@@ -1,0 +1,26 @@
+-- Demo batch: mix of queries on the users collection
+-- Run with:  ./hugo_disk mydb.hugo --run samples/demo.hugoql
+
+-- list everything
+funden users
+
+-- filter by age
+funden users haar age $bh 25
+
+-- filter + sort + limit
+funden users haar city $bg "HN" orange bi score desc lime 3
+
+-- active users only
+funden users haar active $bg true
+
+-- substring match
+funden users haar name $xau "a"
+
+-- exists check
+funden users haar tags $tntt
+
+-- update
+cochin users haar name $bg "Alice" $quy status "updated"
+
+-- count
+skill users

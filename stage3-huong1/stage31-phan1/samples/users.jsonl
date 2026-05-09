@@ -1,0 +1,10 @@
+{"name":"Alice","age":25,"city":"HN","active":true,"score":850}
+{"name":"Bob","age":30,"city":"HCM","active":false,"score":720}
+{"name":"Carol","age":28,"city":"HN","tags":"vip","score":930}
+{"name":"Dave","age":35,"city":"DN","score":610}
+{"name":"Eve","age":22,"city":"HN","active":true,"score":780}
+{"name":"Frank","age":41,"city":"HP","active":true,"score":550}
+{"name":"Grace","age":26,"city":"HCM","tags":"vip","score":880}
+{"name":"Henry","age":33,"city":"DN","active":false,"score":670}
+{"name":"Ivy","age":29,"city":"HN","active":true,"score":810}
+{"name":"Jack","age":45,"city":"CT","score":490}

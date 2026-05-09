@@ -1,0 +1,33 @@
+Hướng dẫn reproduce benchmark trên Linux
+==========================================
+
+Mục đích: thay 5 file này vào đúng vị trí trong repo để khi chạy
+"make bench_final" trên Linux sẽ ra số liệu giống y như file báo cáo
+hugodb_vec_report.md.
+
+Yêu cầu môi trường:
+  - Linux x86-64
+  - gcc với -O3 -march=native (AVX2)
+  - Đã có folder src/vec/ với đầy đủ file từ hugodb_vec_final.zip
+
+Vị trí đặt từng file:
+----------------------
+
+  vec_filter.c      →  src/vec/vec_filter.c        (thay file cũ)
+  vec_bulk_scan.c   →  src/vec/vec_bulk_scan.c      (thay file cũ)
+  bulk_import.c     →  src/core/bulk_import.c       (thay file cũ)
+  executor_disk.c   →  src/core/executor_disk.c     (thay file cũ)
+  bench_final.c     →  bench/bench_final.c          (thay file cũ)
+
+Sau đó build và chạy:
+----------------------
+
+  make bench_final
+
+Lưu ý:
+------
+- 5 file này là chỉ chạy được trên Linux 
+- bench_final.c dùng N=5k/20k/50k cho cả Part 1 và Part 2
+  → đúng với số liệu trong linux report.md
+- Trên Windows dùng bản bench_final.c khác (N=20k/100k cho Part 1)
+  vì dataset lớn hơn mới có thời gian đo được trên Windows SSD nhanh

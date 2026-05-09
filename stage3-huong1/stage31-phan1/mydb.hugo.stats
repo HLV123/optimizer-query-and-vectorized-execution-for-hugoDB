@@ -1,0 +1,69 @@
+HUGO_STATS_V1
+collections 1
+collection users
+total_rows 6
+total_bytes 1362
+page_count 1
+avg_row_size 227
+n_columns 5
+col name
+col_total_rows 6
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 6
+top_k 1 Bob
+top_k 1 Charlie
+top_k 1 Alice
+top_k 1 Dave
+top_k 1 Eve
+top_k 1 Frank
+col age
+col_total_rows 6
+col_null_count 0
+col_distinct 3
+col_min 22
+col_max 35
+col_avg 28.1667
+col_has_histogram 1
+histogram_bounds 22 22 28 28 28 28 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35 35
+histogram_counts 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+col_n_top_k 0
+col dept
+col_total_rows 6
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 3
+top_k 2 sales
+top_k 3 eng
+top_k 1 hr
+col salary
+col_total_rows 6
+col_null_count 0
+col_distinct 6
+col_min 55000
+col_max 80000
+col_avg 67500
+col_has_histogram 1
+histogram_bounds 55000 55000 60000 65000 70000 75000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000 80000
+histogram_counts 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+col_n_top_k 0
+col id
+col_total_rows 6
+col_null_count 0
+col_distinct 6
+col_min 1
+col_max 6
+col_avg 3.5
+col_has_histogram 1
+histogram_bounds 1 1 2 3 4 5 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6 6
+histogram_counts 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+col_n_top_k 0
+end_collection

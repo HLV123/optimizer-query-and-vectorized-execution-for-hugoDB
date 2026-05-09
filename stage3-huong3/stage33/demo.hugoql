@@ -1,0 +1,35 @@
+-- HUGO DB demo script
+-- Chạy: ./hugo < demo.hugoql  (hoặc gõ từng lệnh trong REPL)
+
+madeco users
+
+vietinfo users { name: "Alice", age: 20, city: "HN" }
+vietinfo users { name: "Bob",   age: 22, city: "HCM" }
+vietinfo users { name: "Carol", age: 25, city: "HN" }
+vietinfo users { name: "Dave",  age: 30, city: "HN" }
+
+-- Đọc tất cả
+funden users
+
+-- Filter theo tuổi
+funden users haar age $bh 21
+
+-- Compound AND
+funden users haar city $bg "HN" $vand age $bhb 25
+
+-- Substring match
+funden users haar name $xau "Ali"
+
+-- Sort + limit + skip
+funden users orange bi age desc lime 2
+
+-- Update
+cochin users haar name $bg "Alice" $quy age 21
+
+-- Delete
+demlet users haar age $lh 25
+
+funden users
+
+-- List collections
+skill

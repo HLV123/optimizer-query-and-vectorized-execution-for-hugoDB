@@ -1,0 +1,499 @@
+-- ============================================================
+-- HUGO DB — Complete Test Suite (Stage 1 + Stage 2)
+-- ============================================================
+-- Bao phủ 100% lệnh HugoQL đã implement.
+--
+-- Usage:
+--   ./hugo_disk.exe mydb.hugo --import samples/megadata.jsonl employees
+--   ./hugo_disk.exe mydb.hugo --run samples/full_test.txt
+--
+-- Hoặc Web UI → Batch tab → paste → Run Batch
+-- ============================================================
+
+
+-- ============================================================
+-- 1. COLLECTION MANAGEMENT (madeco / delco / skill)
+-- ============================================================
+
+skill
+madeco temp_test
+skill
+skill temp_test
+delco temp_test
+skill
+
+
+-- ============================================================
+-- 2. INSERT ĐƠN (vietinfo)
+-- ============================================================
+
+vietinfo employees { name: "TestSingle", age: 99, city: "TestCity", department: "QA", salary: 9999, level: "intern", status: "active", score: 100, active: true, years_exp: 0 }
+
+funden employees haar name $bg "TestSingle" lime 1
+
+
+-- ============================================================
+-- 3. INSERT BATCH (vietinfo [...])
+-- ============================================================
+
+vietinfo batch_test [{ name: "Batch1", val: 10 }, { name: "Batch2", val: 20 }, { name: "Batch3", val: 30 }]
+
+funden batch_test
+skill batch_test
+
+
+-- ============================================================
+-- 4. BASIC FIND (funden + lime + skopan)
+-- ============================================================
+
+funden employees lime 3
+funden employees lime 5
+funden employees lime 10 skopan 50
+funden employees lime 5 skopan 4990
+
+
+-- ============================================================
+-- 5. SO SÁNH CƠ BẢN ($bg, $kc, $lh, $bh, $lhb, $bhb)
+-- ============================================================
+
+-- $bg (bằng) — string
+funden employees haar city $bg "HCM" lime 3
+
+-- $bg — number
+funden employees haar age $bg 25 lime 3
+
+-- $bg — bool
+funden employees haar active $bg true lime 3
+
+-- $kc (khác)
+funden employees haar status $kc "active" lime 3
+
+-- $lh (nhỏ hơn)
+funden employees haar age $lh 20 lime 3
+
+-- $bh (lớn hơn)
+funden employees haar salary $bh 10000 lime 5
+
+-- $lhb (nhỏ hơn bằng)
+funden employees haar score $lhb 5 lime 3
+
+-- $bhb (lớn hơn bằng)
+funden employees haar years_exp $bhb 35 lime 3
+
+
+-- ============================================================
+-- 6. SUBSTRING ($xau)
+-- ============================================================
+
+funden employees haar name $xau "Alice" lime 5
+funden employees haar name $xau "Bob" lime 5
+funden employees haar bio $xau "machine learning" lime 3
+funden employees haar bio $xau "Docker" lime 3
+funden employees haar email $xau "company.vn" lime 3
+
+
+-- ============================================================
+-- 7. EXISTS ($tntt)
+-- ============================================================
+
+funden employees haar bio $tntt lime 3
+funden employees haar rating $tntt lime 3
+funden employees haar hire_date $tntt lime 3
+funden employees haar tags $tntt lime 3
+funden employees haar project $tntt lime 3
+
+
+-- ============================================================
+-- 8. IN / NOT IN ($tg / $ktg)         ← STAGE 2 NEW
+-- ============================================================
+
+-- $tg: tìm docs có city nằm trong danh sách
+funden employees haar city $tg ["Tokyo", "Seoul", "London"] lime 5
+
+-- $tg: tìm theo level
+funden employees haar level $tg ["senior", "principal", "director"] lime 5
+
+-- $tg: tìm theo score cụ thể
+funden employees haar score $tg [0, 50, 100] lime 5
+
+-- $ktg: tìm docs KHÔNG nằm trong list
+funden employees haar department $ktg ["HR", "Legal", "Finance"] lime 5
+
+-- $ktg: loại trừ status
+funden employees haar status $ktg ["terminated", "inactive"] lime 5
+
+
+-- ============================================================
+-- 9. NOT ($vnot)                       ← STAGE 2 NEW
+-- ============================================================
+
+-- $vnot: tìm docs mà age KHÔNG > 30 (tức age <= 30)
+funden employees haar $vnot age $bh 30 lime 5
+
+-- $vnot kết hợp: KHÔNG phải active
+funden employees haar $vnot active $bg true lime 5
+
+
+-- ============================================================
+-- 10. COMPOUND ($vand / $vor)
+-- ============================================================
+
+-- AND: age > 30 VÀ salary > 5000
+funden employees haar age $bh 30 $vand salary $bh 5000 lime 5
+
+-- AND: city = "HCM" VÀ department = "Engineering"
+funden employees haar city $bg "HCM" $vand department $bg "Engineering" lime 5
+
+-- AND: active = true VÀ score > 80
+funden employees haar active $bg true $vand score $bh 80 lime 5
+
+-- AND: level = senior VÀ status = active
+funden employees haar level $bg "senior" $vand status $bg "active" lime 5
+
+-- OR: city = "Tokyo" HOẶC city = "Seoul"
+funden employees haar city $bg "Tokyo" $vor city $bg "Seoul" lime 5
+
+-- OR: department = "Engineering" HOẶC department = "DevOps"
+funden employees haar department $bg "Engineering" $vor department $bg "DevOps" lime 5
+
+-- AND + exists: có bio VÀ age > 40
+funden employees haar bio $tntt $vand age $bh 40 lime 3
+
+-- Triple AND: senior + active + salary cao
+funden employees haar level $bg "senior" $vand status $bg "active" $vand salary $bh 5000 lime 5
+
+
+-- ============================================================
+-- 11. SORT (orange bi)
+-- ============================================================
+
+-- Sort age tăng dần
+funden employees orange bi age asc lime 5
+
+-- Sort age giảm dần
+funden employees orange bi age desc lime 5
+
+-- Sort salary cao nhất
+funden employees orange bi salary desc lime 5
+
+-- Sort score thấp nhất
+funden employees orange bi score asc lime 5
+
+-- Sort name A-Z
+funden employees orange bi name asc lime 5
+
+-- Sort years_exp giảm dần
+funden employees orange bi years_exp desc lime 5
+
+-- Sort nhiều field: salary desc, age asc
+funden employees orange bi salary desc, age asc lime 5
+
+
+-- ============================================================
+-- 12. COMBINED: FILTER + SORT + LIMIT + SKIP
+-- ============================================================
+
+-- Top 5 lương cao nhất ở HCM
+funden employees haar city $bg "HCM" orange bi salary desc lime 5
+
+-- Top 10 điểm cao nhất, active
+funden employees haar active $bg true orange bi score desc lime 10
+
+-- Senior engineers, sort by salary, skip 5
+funden employees haar level $bg "senior" $vand department $bg "Engineering" orange bi salary desc lime 5 skopan 5
+
+-- Người trẻ nhất ở mỗi thành phố
+funden employees haar city $bg "HCM" orange bi age asc lime 3
+funden employees haar city $bg "Tokyo" orange bi age asc lime 3
+
+-- Top salaries overall
+funden employees orange bi salary desc lime 3
+
+-- Lowest scores
+funden employees orange bi score asc lime 3
+
+-- Lấy page 3 (skip 100, lime 50)
+funden employees lime 50 skopan 100
+
+
+-- ============================================================
+-- 13. UPDATE — $quy (SET)
+-- ============================================================
+
+-- Update 1 field
+cochin employees haar name $bg "TestSingle" $quy age 100
+
+-- Confirm
+funden employees haar name $bg "TestSingle" lime 1
+
+-- Bulk update: score < 5 → status on_leave
+cochin employees haar score $lh 5 $quy status "on_leave"
+
+-- Thêm field mới cho senior
+cochin employees haar level $bg "senior" $quy reviewed "yes"
+
+-- Confirm reviewed tồn tại
+funden employees haar reviewed $tntt lime 3
+
+
+-- ============================================================
+-- 14. UPDATE — $don (PUSH) + $loi (PULL)  ← STAGE 2 NEW
+-- ============================================================
+
+-- $don: thêm tag vào array-style field
+cochin employees haar name $bg "TestSingle" $don tags "urgent"
+
+-- $don: thêm thêm 1 tag nữa
+cochin employees haar name $bg "TestSingle" $don tags "reviewed"
+
+-- Confirm tags
+funden employees haar name $bg "TestSingle" lime 1
+
+-- $loi: xóa tag khỏi field
+cochin employees haar name $bg "TestSingle" $loi tags "urgent"
+
+-- Confirm sau pull
+funden employees haar name $bg "TestSingle" lime 1
+
+
+-- ============================================================
+-- 15. DELETE (demlet)
+-- ============================================================
+
+-- Xóa test doc
+demlet employees haar name $bg "TestSingle"
+
+-- Confirm xóa
+funden employees haar name $bg "TestSingle" lime 1
+
+-- Xóa batch_test collection
+demlet batch_test haar name $tntt
+delco batch_test
+
+
+-- ============================================================
+-- 16. AGGREGATION — gomail + gremb bi    ← STAGE 2 NEW
+-- ============================================================
+
+-- COUNT theo department
+gomail employees gremb bi department pou score
+
+-- SUM salary theo city
+gomail employees gremb bi city sep salary
+
+-- AVG age theo level
+gomail employees gremb bi level awr age
+
+-- MIN score theo department
+gomail employees gremb bi department mie score
+
+-- MAX salary theo city
+gomail employees gremb bi city maf salary
+
+-- Nhiều agg: SUM + AVG salary theo department
+gomail employees gremb bi department sep salary, awr salary
+
+-- COUNT + MAX theo level
+gomail employees gremb bi level pou score, maf salary
+
+-- COUNT + MIN + MAX theo status
+gomail employees gremb bi status pou score, mie score, maf score
+
+
+-- ============================================================
+-- 17. INDEX — madecoidu / delecoidu      ← STAGE 2 NEW
+-- ============================================================
+
+-- Tạo index trên age
+madecoidu employees.age
+
+-- Tạo index trên city
+madecoidu employees.city
+
+-- Xem index (qua skill)
+skill employees
+
+-- Xóa index
+delecoidu employees.city
+
+-- Tạo lại
+madecoidu employees.department
+
+
+-- ============================================================
+-- 18. QUERY PLAN — exepanus              ← STAGE 2 NEW
+-- ============================================================
+
+-- Explain query đơn giản
+exepanus funden employees haar age $bh 25
+
+-- Explain query dùng indexed field
+exepanus funden employees haar city $bg "HCM"
+
+-- Explain query không filter
+exepanus funden employees
+
+
+-- ============================================================
+-- 19. JOIN — $rasoat                     ← STAGE 2 NEW
+-- ============================================================
+
+-- Setup: tạo collection orders để join
+madeco orders
+vietinfo orders { user_name: "Alice Johnson", product: "Laptop", total: 1500 }
+vietinfo orders { user_name: "Bob Williams", product: "Phone", total: 800 }
+vietinfo orders { user_name: "Alice Johnson", product: "Mouse", total: 50 }
+
+-- Join orders với employees qua name
+funden orders haar user_name $bg "Alice Johnson" $rasoat emp from employees on user_name $bg employees.name lime 5
+
+-- Xem orders data
+funden orders lime 5
+
+-- Cleanup
+delco orders
+
+
+-- ============================================================
+-- 20. TRANSACTION — ginan / cometi / tulaberk  ← STAGE 2 NEW
+-- ============================================================
+
+-- Begin transaction
+ginan
+
+-- Insert trong transaction
+vietinfo employees { name: "TxTest", age: 50, city: "TxCity", department: "Test", salary: 1000, level: "mid", status: "active", score: 50, active: true, years_exp: 5 }
+
+-- Commit
+cometi
+
+-- Confirm doc tồn tại
+funden employees haar name $bg "TxTest" lime 1
+
+-- Begin + abort
+ginan
+vietinfo employees { name: "AbortTest", age: 99 }
+tulaberk
+
+-- Cleanup
+demlet employees haar name $bg "TxTest"
+demlet employees haar name $bg "AbortTest"
+
+
+-- ============================================================
+-- 21. DATABASE — usf                     ← STAGE 2 NEW
+-- ============================================================
+
+-- Chuyển database (MVP: thông báo OK)
+usf mydb
+usf another_db
+usf employees_db
+
+
+-- ============================================================
+-- 22. EDGE CASES & STRESS
+-- ============================================================
+
+-- Filter không match gì
+funden employees haar age $bg 999
+
+-- Score chính xác bằng 0
+funden employees haar score $bg 0 lime 3
+
+-- Salary range: 1000-2000
+funden employees haar salary $bhb 1000 $vand salary $lhb 2000 lime 5
+
+-- Age range: 18-20
+funden employees haar age $bhb 18 $vand age $lhb 20 lime 5
+
+-- Age range: 60-65
+funden employees haar age $bhb 60 $vand age $lhb 65 lime 5
+
+-- Multiple filters rất chặt
+funden employees haar city $bg "Tokyo" $vand level $bg "principal" $vand active $bg true lime 3
+
+-- Sort + skip lớn
+funden employees orange bi salary desc lime 5 skopan 4000
+
+-- Tìm department = Legal (ít docs)
+funden employees haar department $bg "Legal" lime 50
+
+-- Tags VIP
+funden employees haar tags $bg "vip" lime 5
+
+-- Project = "Hugo DB"
+funden employees haar project $bg "Hugo DB" lime 5
+
+-- Rating > 4.5
+funden employees haar rating $bh 4.5 lime 5
+
+-- Email chứa pattern
+funden employees haar email $xau "alice" lime 3
+
+-- $tg edge: tìm status trong list dài
+funden employees haar status $tg ["active", "probation"] lime 5
+
+-- $ktg edge: loại trừ nhiều cities
+funden employees haar city $ktg ["HCM", "Tokyo", "London", "Paris"] lime 5
+
+-- $vnot + compound
+funden employees haar $vnot department $bg "Engineering" $vand active $bg true lime 5
+
+-- Substring trên bio dài
+funden employees haar bio $xau "automated testing" lime 5
+
+-- $tg trên field sparse
+funden employees haar tags $tg ["vip", "mentor"] lime 5
+
+
+-- ============================================================
+-- 23. PERFORMANCE QUERIES
+-- ============================================================
+
+-- Full scan (no filter)
+funden employees lime 1
+
+-- Count
+skill employees
+
+-- Exact match (age)
+funden employees haar age $bg 30 lime 1
+
+-- Range scan
+funden employees haar salary $bh 8000 lime 1
+
+-- Substring (expensive)
+funden employees haar name $xau "Tran" lime 1
+
+-- Sort toàn bộ dataset
+funden employees orange bi salary desc lime 1
+
+-- Complex compound
+funden employees haar age $bh 25 $vand salary $bh 3000 $vand active $bg true lime 1
+
+-- Exists check
+funden employees haar bio $tntt lime 1
+
+-- $tg scan
+funden employees haar city $tg ["London", "Berlin", "Sydney"] lime 1
+
+-- Aggregation performance
+gomail employees gremb bi department pou score, sep salary, awr age
+
+
+-- ============================================================
+-- 24. FINAL STATE
+-- ============================================================
+
+skill
+skill employees
+
+-- Cleanup indexes
+delecoidu employees.age
+delecoidu employees.department
+
+-- Top 3 earners
+funden employees orange bi salary desc lime 3
+
+-- Done!
+-- ============================================================

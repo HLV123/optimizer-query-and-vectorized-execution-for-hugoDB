@@ -1,0 +1,94 @@
+HUGO_STATS_V1
+collections 1
+collection users
+total_rows 10
+total_bytes 2550
+page_count 1
+avg_row_size 255
+n_columns 7
+col name
+col_total_rows 10
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 10
+top_k 1 Alice
+top_k 1 Bob
+top_k 1 Carol
+top_k 1 Dave
+top_k 1 Eve
+top_k 1 Frank
+top_k 1 Grace
+top_k 1 Henry
+top_k 1 Ivy
+top_k 1 Jack
+col age
+col_total_rows 10
+col_null_count 0
+col_distinct 10
+col_min 22
+col_max 45
+col_avg 31.4
+col_has_histogram 1
+histogram_bounds 22 22 25 26 28 29 30 33 35 41 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45 45
+histogram_counts 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+col_n_top_k 0
+col city
+col_total_rows 10
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 5
+top_k 4 HN
+top_k 2 HCM
+top_k 2 DN
+top_k 1 HP
+top_k 1 CT
+col active
+col_total_rows 6
+col_null_count 6
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 0
+col score
+col_total_rows 10
+col_null_count 0
+col_distinct 10
+col_min 490
+col_max 930
+col_avg 729
+col_has_histogram 1
+histogram_bounds 490 490 550 610 670 720 780 810 850 880 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930 930
+histogram_counts 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+col_n_top_k 0
+col id
+col_total_rows 10
+col_null_count 0
+col_distinct 10
+col_min 1
+col_max 10
+col_avg 5.5
+col_has_histogram 1
+histogram_bounds 1 1 2 3 4 5 6 7 8 9 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10 10
+histogram_counts 1 1 1 1 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+col_n_top_k 0
+col tags
+col_total_rows 2
+col_null_count 0
+col_distinct 1
+col_min 1e+300
+col_max -1e+300
+col_avg 0
+col_has_histogram 0
+col_n_top_k 1
+top_k 2 vip
+end_collection

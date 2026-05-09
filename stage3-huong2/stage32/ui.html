@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>HUGO DB</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FFFFFF;
+    --bg-sec: #F9FBFA;
+    --bg-side: #F9FBFA;
+    --bg-hover: #E8EDEB;
+    --bg-doc: #FFFFFF;
+    --border: #E8EDEB;
+    --border-strong: #C1C7C6;
+    --text: #1C2D38;
+    --text-sec: #5C6C75;
+    --text-muted: #889397;
+    --green: #00ED64;
+    --green-dark: #00A35C;
+    --green-darker: #00684A;
+    --green-bg: #E3FCF7;
+    --green-border: #71F6BA;
+    --blue: #016BF8;
+    --blue-light: #E1F7FF;
+    --yellow: #FFC010;
+    --yellow-bg: #FFF1CF;
+    --red: #DB3030;
+    --red-bg: #FFEFEF;
+    --mono: 'Source Code Pro', Consolas, 'Courier New', monospace;
+    --sans: 'Source Sans 3', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.08);
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: var(--sans); background: var(--bg); color: var(--text);
+    height: 100vh; display: flex; flex-direction: column; font-size: 14px; line-height: 1.5;
+  }
+
+  /* ===== Top header bar ===== */
+  .topbar {
+    background: #1C2D38; color: #fff; display: flex; align-items: center;
+    padding: 0 16px; height: 40px; flex-shrink: 0; font-size: 13px; gap: 12px;
+  }
+  .topbar .logo {
+    font-weight: 700; font-size: 14px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;
+  }
+  .topbar .logo .leaf { color: var(--green); font-size: 18px; }
+  .topbar .connection {
+    background: rgba(255,255,255,0.1); border-radius: 4px; padding: 3px 10px;
+    font-family: var(--mono); font-size: 12px; color: #C1C7C6;
+  }
+  .topbar .spacer { flex: 1; }
+  .topbar .status { display: flex; align-items: center; gap: 5px; font-size: 12px; color: #C1C7C6; }
+  .topbar .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .topbar .dot.ok { background: var(--green); }
+  .topbar .dot.err { background: var(--red); }
+
+  /* ===== Breadcrumb + tabs ===== */
+  .nav-bar {
+    background: var(--bg); border-bottom: 1px solid var(--border);
+    padding: 0 20px; display: flex; flex-direction: column;
+  }
+  .breadcrumb {
+    font-size: 13px; padding: 10px 0 0; display: flex; align-items: center; gap: 4px;
+    color: var(--text-sec);
+  }
+  .breadcrumb a {
+    color: var(--blue); text-decoration: none; cursor: pointer;
+  }
+  .breadcrumb a:hover { text-decoration: underline; }
+  .breadcrumb .sep { color: var(--text-muted); margin: 0 2px; }
+  .breadcrumb .current { color: var(--text); font-weight: 600; }
+  .tab-bar {
+    display: flex; gap: 0; margin-top: 6px;
+  }
+  .tab-item {
+    padding: 8px 16px; font-size: 13px; color: var(--text-sec);
+    cursor: pointer; border-bottom: 3px solid transparent;
+    font-weight: 500; user-select: none; position: relative;
+  }
+  .tab-item:hover { color: var(--text); }
+  .tab-item.active {
+    color: var(--text); font-weight: 600; border-bottom-color: var(--green-darker);
+  }
+  .tab-item .badge {
+    font-size: 11px; background: var(--bg-sec); border: 1px solid var(--border);
+    border-radius: 10px; padding: 0 6px; margin-left: 4px; color: var(--text-sec);
+    font-weight: 500;
+  }
+  .tab-item.active .badge { background: var(--green-bg); border-color: var(--green-border); color: var(--green-darker); }
+
+  /* ===== Main layout ===== */
+  main { flex: 1; display: flex; overflow: hidden; }
+
+  /* ===== Sidebar ===== */
+  #sidebar {
+    width: 260px; background: var(--bg-side); border-right: 1px solid var(--border);
+    display: flex; flex-direction: column; overflow: hidden; font-size: 13px;
+  }
+  .side-hdr {
+    padding: 12px 12px 8px; display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .side-hdr span { font-weight: 600; font-size: 12px; text-transform: uppercase; color: var(--text-sec); letter-spacing: 0.3px; }
+  .side-hdr .btns { display: flex; gap: 4px; }
+  .side-hdr .btns button {
+    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    font-size: 14px; padding: 2px 4px; border-radius: 3px;
+  }
+  .side-hdr .btns button:hover { background: var(--bg-hover); color: var(--text); }
+  #coll-list { flex: 1; overflow-y: auto; padding: 4px 0; }
+  .coll-item {
+    padding: 6px 12px 6px 16px; cursor: pointer; display: flex; align-items: center;
+    gap: 6px; color: var(--text-sec); transition: background 0.1s;
+  }
+  .coll-item:hover { background: var(--bg-hover); color: var(--text); }
+  .coll-item.active { background: var(--green-bg); color: var(--green-darker); font-weight: 600; }
+  .coll-item .icon { font-size: 12px; color: var(--text-muted); flex-shrink: 0; }
+  .coll-item.active .icon { color: var(--green-darker); }
+  .coll-item .name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .coll-item .cnt {
+    font-size: 11px; color: var(--text-muted); font-family: var(--mono);
+  }
+  .coll-item.active .cnt { color: var(--green-darker); }
+  .coll-item .dots {
+    opacity: 0; font-size: 12px; color: var(--text-muted); cursor: pointer; padding: 2px;
+  }
+  .coll-item:hover .dots { opacity: 1; }
+  .side-empty { padding: 20px 16px; color: var(--text-muted); font-size: 12px; text-align: center; }
+  .side-tree-parent {
+    padding: 6px 12px; display: flex; align-items: center; gap: 6px;
+    color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;
+  }
+  .side-tree-parent .arrow { font-size: 10px; color: var(--text-muted); }
+
+  /* ===== Content area ===== */
+  #content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+  #content { flex: 1; overflow: auto; padding: 16px 20px; background: var(--bg-sec); }
+  .pane { display: none; }
+  .pane.active { display: block; }
+
+  /* ===== Query filter bar (like Compass) ===== */
+  .filter-bar {
+    background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-sm); margin-bottom: 12px;
+  }
+  .filter-bar .filter-icon { color: var(--green-darker); font-size: 14px; }
+  .filter-bar input {
+    flex: 1; border: none; background: none; font-family: var(--mono);
+    font-size: 13px; color: var(--text); outline: none;
+  }
+  .filter-bar input::placeholder { color: var(--text-muted); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 4px; padding: 6px 14px;
+    border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer;
+    font-family: var(--sans); border: 1px solid transparent; transition: all 0.1s;
+  }
+  .btn-green { background: var(--green-darker); color: #fff; border-color: var(--green-darker); }
+  .btn-green:hover { background: #005C3E; }
+  .btn-outline {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border-strong);
+  }
+  .btn-outline:hover { background: var(--bg-hover); }
+  .btn-red { background: var(--bg); color: var(--red); border: 1px solid var(--red); }
+  .btn-red:hover { background: var(--red-bg); }
+  .btn-sm { padding: 4px 10px; font-size: 12px; font-weight: 500; }
+  .btn-blue { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn-blue:hover { background: #0050C8; }
+
+  /* ===== Toolbar (like Compass ADD DATA / UPDATE / DELETE row) ===== */
+  .toolbar {
+    display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap;
+  }
+  .toolbar .sep { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
+  .toolbar .spacer { flex: 1; }
+  .toolbar .page-info {
+    font-size: 12px; color: var(--text-sec); font-family: var(--mono);
+    display: flex; align-items: center; gap: 6px;
+  }
+  .toolbar .page-info select {
+    border: 1px solid var(--border-strong); border-radius: 4px; padding: 3px 6px;
+    font-size: 12px; font-family: var(--mono); background: var(--bg); color: var(--text);
+  }
+  .toolbar .page-nav {
+    display: flex; gap: 2px;
+  }
+  .toolbar .page-nav button {
+    background: var(--bg); border: 1px solid var(--border); color: var(--text-sec);
+    width: 28px; height: 28px; border-radius: 4px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; font-size: 12px;
+  }
+  .toolbar .page-nav button:hover:not(:disabled) { background: var(--bg-hover); color: var(--text); }
+  .toolbar .page-nav button:disabled { opacity: 0.4; cursor: default; }
+  .toolbar .refresh-btn {
+    background: none; border: none; color: var(--text-muted); cursor: pointer;
+    font-size: 14px; padding: 4px;
+  }
+  .toolbar .refresh-btn:hover { color: var(--text); }
+  .toolbar .view-toggle {
+    display: flex; border: 1px solid var(--border); border-radius: 4px; overflow: hidden;
+  }
+  .toolbar .view-toggle button {
+    background: var(--bg); border: none; color: var(--text-muted); padding: 4px 8px;
+    cursor: pointer; font-size: 13px; border-right: 1px solid var(--border);
+  }
+  .toolbar .view-toggle button:last-child { border-right: none; }
+  .toolbar .view-toggle button.active { background: var(--bg-hover); color: var(--text); }
+  .toolbar .view-toggle button:hover { background: var(--bg-hover); }
+
+  /* ===== Document cards (list view like Compass) ===== */
+  .doc-card {
+    background: var(--bg-doc); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 14px 18px; margin-bottom: 8px; font-family: var(--mono); font-size: 13px;
+    line-height: 1.6; box-shadow: var(--shadow-sm); transition: border-color 0.15s;
+  }
+  .doc-card:hover { border-color: var(--border-strong); }
+  .doc-field { display: flex; gap: 8px; padding: 1px 0; }
+  .doc-key { color: var(--text-sec); min-width: 120px; flex-shrink: 0; }
+  .doc-key::after { content: " :"; }
+  .doc-val-str { color: var(--green-darker); }
+  .doc-val-str::before, .doc-val-str::after { content: '"'; color: var(--text-muted); }
+  .doc-val-num { color: var(--text); }
+  .doc-val-bool { color: var(--yellow); font-weight: 600; }
+  .doc-val-null { color: var(--text-muted); font-style: italic; }
+  .doc-val-date { color: var(--blue); }
+  .doc-val-id { color: var(--text-sec); }
+  .doc-val-obj { color: var(--text-muted); }
+  .doc-val-obj::before { content: "▸ "; font-size: 10px; }
+
+  /* ===== Table view ===== */
+  .table-scroll-container {
+    overflow-x: auto; overflow-y: auto;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--bg-doc);
+    max-height: calc(100vh - 320px);  /* fixed height: scroll chỉ trong container */
+  }
+  .table-scroll-container table {
+    width: max-content; min-width: 100%; border-collapse: collapse; font-size: 13px;
+    background: var(--bg-doc); border: none; border-radius: 0;
+    table-layout: auto;  /* columns auto-size to widest content */
+  }
+  table {
+    width: 100%; border-collapse: collapse; font-size: 13px; background: var(--bg-doc);
+    border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden;
+  }
+  th, td {
+    padding: 8px 14px; text-align: left; border-bottom: 1px solid var(--border);
+    white-space: nowrap; max-width: none;  /* mọi cell 1 dòng, không xuống dòng */
+    overflow: hidden; text-overflow: ellipsis;
+  }
+  /* Trong scroll container: columns size to content, không ellipsis */
+  .table-scroll-container th,
+  .table-scroll-container td {
+    overflow: visible; text-overflow: unset;
+  }
+  th {
+    background: var(--bg-sec); color: var(--text-sec); font-weight: 600; font-size: 12px;
+    position: sticky; top: 0; z-index: 1; cursor: pointer; user-select: none;
+  }
+  th:hover { background: var(--bg-hover); color: var(--text); }
+  th .sort-arrow { color: var(--text-muted); margin-left: 4px; font-size: 10px; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #F3FBF9; }
+  td.num { text-align: right; font-family: var(--mono); }
+  td.str { color: var(--green-darker); font-family: var(--mono); }
+  td.bool { color: #B45309; font-family: var(--mono); }
+  td.null { color: var(--text-muted); font-style: italic; }
+  td.id-col { color: var(--text-sec); font-family: var(--mono); }
+
+  /* ===== Query editor ===== */
+  textarea.code {
+    width: 100%; font-family: var(--mono); font-size: 13px; padding: 12px 14px;
+    background: var(--bg-doc); color: var(--text); border: 1px solid var(--border);
+    border-radius: var(--radius); resize: vertical; line-height: 1.5;
+    box-shadow: var(--shadow-sm);
+  }
+  textarea.code:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(1,107,248,0.12); }
+
+  /* ===== Result banner ===== */
+  .result-banner {
+    padding: 8px 14px; border-radius: var(--radius); font-size: 13px;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 6px;
+  }
+  .result-banner.ok { background: var(--green-bg); border: 1px solid var(--green-border); color: var(--green-darker); }
+  .result-banner.err { background: var(--red-bg); border: 1px solid #F5C6C6; color: var(--red); }
+  .result-banner.info { background: var(--blue-light); border: 1px solid #B8E3FF; color: var(--blue); }
+
+  /* ===== Import dropzone ===== */
+  .dropzone {
+    border: 2px dashed var(--border-strong); border-radius: 8px; padding: 48px 24px;
+    text-align: center; color: var(--text-sec); transition: all 0.15s; background: var(--bg-doc);
+  }
+  .dropzone.drag { border-color: var(--green); background: var(--green-bg); color: var(--green-darker); }
+  .dropzone p { margin: 6px 0; }
+  .form-row { display: flex; gap: 10px; margin-bottom: 14px; align-items: center; }
+  .form-row label { min-width: 140px; color: var(--text-sec); font-size: 13px; font-weight: 500; }
+  input.field {
+    background: var(--bg-doc); color: var(--text); border: 1px solid var(--border-strong);
+    padding: 7px 10px; border-radius: 4px; font-family: var(--mono); font-size: 13px; flex: 1;
+  }
+  input.field:focus { outline: none; border-color: var(--blue); box-shadow: 0 0 0 3px rgba(1,107,248,0.12); }
+
+  /* ===== Batch stats ===== */
+  .batch-stats {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+    gap: 8px; margin-bottom: 14px;
+  }
+  .batch-stat {
+    background: var(--bg-doc); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 10px 12px;
+  }
+  .batch-stat .k { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+  .batch-stat .v { font-family: var(--mono); font-size: 15px; color: var(--green-darker); margin-top: 2px; font-weight: 600; }
+
+  /* ===== Stats cards ===== */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .stat-card {
+    background: var(--bg-doc); border: 1px solid var(--border); border-radius: var(--radius);
+    padding: 16px; box-shadow: var(--shadow-sm);
+  }
+  .stat-card .label { font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.4px; font-weight: 600; }
+  .stat-card .value { font-size: 28px; font-weight: 700; margin-top: 6px; color: var(--green-darker); font-family: var(--mono); }
+  .stat-card .sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+  .section-title { font-size: 12px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; margin: 20px 0 8px; font-weight: 600; }
+
+  .empty { text-align: center; color: var(--text-muted); padding: 48px 24px; font-size: 14px; }
+  .hint { color: var(--text-muted); font-size: 11px; font-family: var(--mono); }
+</style>
+</head>
+<body>
+
+  <!-- Top bar -->
+  <div class="topbar">
+    <div class="logo"><span class="leaf">🍃</span> HUGO DB</div>
+    <div class="connection" id="db-badge">localhost</div>
+    <div class="spacer"></div>
+    <div class="status"><div class="dot" id="status-dot"></div><span id="status-text">connecting...</span></div>
+  </div>
+
+  <main>
+    <!-- Sidebar -->
+    <aside id="sidebar">
+      <div class="side-hdr">
+        <span>Connections (1)</span>
+        <div class="btns">
+          <button onclick="refreshAll()" title="Refresh">↻</button>
+          <button onclick="switchTab('import')" title="Add">+</button>
+        </div>
+      </div>
+      <div id="sidebar-tree"></div>
+    </aside>
+
+    <!-- Content -->
+    <section id="content-area">
+      <!-- Nav bar -->
+      <div class="nav-bar">
+        <div class="breadcrumb" id="breadcrumb"></div>
+        <div class="tab-bar" id="tab-bar"></div>
+      </div>
+
+      <div id="content">
+        <!-- Overview -->
+        <div class="pane active" data-pane="overview">
+          <div class="stats-grid" id="overview-stats"></div>
+          <div class="section-title">Collections</div>
+          <div id="overview-colls"></div>
+        </div>
+
+        <!-- Documents -->
+        <div class="pane" data-pane="docs">
+          <div id="docs-empty" class="empty">Select a collection from the sidebar to view documents</div>
+          <div id="docs-view" style="display:none">
+            <div class="filter-bar">
+              <span class="filter-icon">⊕</span>
+              <input type="text" id="docs-filter" placeholder="Type a query: { field: 'value' } or Generate query ✦" onkeydown="if(event.key==='Enter')docsApplyFilter()">
+              <button class="btn btn-outline btn-sm" onclick="docsApplyFilter()">Find</button>
+              <button class="btn btn-outline btn-sm" onclick="$('docs-filter').value=''; docsReload()">Reset</button>
+            </div>
+            <div class="toolbar">
+              <button class="btn btn-green btn-sm" onclick="switchTab('import')">⊕ ADD DATA ▾</button>
+              <div class="sep"></div>
+              <button class="btn btn-outline btn-sm" onclick="switchTab('query')">⊕ QUERY</button>
+              <div class="spacer"></div>
+              <div class="page-info">
+                <select id="docs-per-page" onchange="docsReload()">
+                  <option>25</option><option selected>50</option><option>100</option><option>200</option>
+                </select>
+                <span id="docs-page-info">—</span>
+                <button class="refresh-btn" onclick="docsReload()">↻</button>
+              </div>
+              <div class="page-nav">
+                <button onclick="docsPage(-1)" id="docs-prev" title="Previous page">‹</button>
+                <button onclick="docsPage(1)" id="docs-next" title="Next page">›</button>
+              </div>
+              <div class="view-toggle">
+                <button id="view-list" class="active" onclick="setViewMode('list')" title="List view">☰</button>
+                <button id="view-table" onclick="setViewMode('table')" title="Table view">⊞</button>
+              </div>
+            </div>
+            <div id="docs-table"></div>
+            <div style="padding:8px 0;font-size:12px;color:var(--text-muted);font-family:var(--mono)" id="docs-count-info"></div>
+          </div>
+        </div>
+
+        <!-- Query -->
+        <div class="pane" data-pane="query">
+          <div style="margin-bottom:10px">
+            <textarea id="query" class="code" rows="5" placeholder="HugoQL query, e.g. funden users haar age $bh 20 orange bi age desc lime 10"></textarea>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-green" onclick="runQuery()">Find</button>
+            <button class="btn btn-outline" onclick="$('query').value='';$('query-result').innerHTML=''">Reset</button>
+            <span class="hint" style="margin-left:4px">Ctrl+Enter</span>
+            <div class="spacer"></div>
+            <span style="font-size:12px;color:var(--text-muted)">Samples:</span>
+            <button class="btn btn-outline btn-sm" onclick="setQuery('madeco users')">madeco</button>
+            <button class="btn btn-outline btn-sm" onclick='setQuery("vietinfo users { name: \"Alice\", age: 20 }")'>vietinfo</button>
+            <button class="btn btn-outline btn-sm" onclick="setQuery('funden users haar age $bh 18 orange bi age desc lime 5')">complex</button>
+            <button class="btn btn-outline btn-sm" onclick="setQuery('skill')">skill</button>
+            <div class="view-toggle" style="margin-left:8px">
+              <button id="qview-list" class="active" onclick="setQueryViewMode('list')" title="List view">☰</button>
+              <button id="qview-table" onclick="setQueryViewMode('table')" title="Table view">⊞</button>
+            </div>
+          </div>
+          <div id="query-result" style="margin-top:16px"></div>
+        </div>
+
+        <!-- Batch -->
+        <div class="pane" data-pane="batch">
+          <div style="margin-bottom:10px">
+            <textarea id="batch-text" class="code" rows="10" placeholder="Multiple queries, 1 per line. Comments: -- or #"></textarea>
+          </div>
+          <div class="toolbar">
+            <button class="btn btn-green" onclick="runBatch()">Run Batch</button>
+            <span class="hint">Each line = 1 query. p50/p95/p99 reported.</span>
+            <div class="spacer"></div>
+            <button class="btn btn-outline btn-sm" onclick="loadBatchSample()">Load sample</button>
+          </div>
+          <div id="batch-result" style="margin-top:16px"></div>
+        </div>
+
+        <!-- Import -->
+        <div class="pane" data-pane="import">
+          <div class="form-row">
+            <label>Target collection:</label>
+            <input class="field" type="text" id="import-coll" placeholder="e.g. users (will be created if new)">
+          </div>
+          <div id="dropzone" class="dropzone"
+               ondragover="event.preventDefault();this.classList.add('drag')"
+               ondragleave="this.classList.remove('drag')"
+               ondrop="handleDrop(event)">
+            <p style="font-size:28px;margin:0">📄</p>
+            <p><strong>Drop a JSONL file here</strong></p>
+            <p style="font-size:12px;color:var(--text-muted)">or <label style="color:var(--blue);cursor:pointer;text-decoration:underline">browse<input type="file" id="import-file" style="display:none" onchange="handleFileInput(event)"></label></p>
+            <p style="font-size:11px;color:var(--text-muted)">Format: 1 JSON object per line. Max 16MB.</p>
+          </div>
+          <details style="margin-top:14px">
+            <summary style="cursor:pointer;color:var(--text-muted);font-size:12px;font-weight:500">▸ Paste JSONL directly</summary>
+            <textarea id="import-text" class="code" rows="6" style="margin-top:8px" placeholder='{"name":"Alice","age":20}&#10;{"name":"Bob","age":22}'></textarea>
+            <button class="btn btn-outline" style="margin-top:8px" onclick="importPasted()">Import pasted</button>
+          </details>
+          <div id="import-result" style="margin-top:16px"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+<script>
+let S = {
+  currentColl: null, docsPage: 0, docsPerPage: 50, docsData: [],
+  docsTotal: 0, sortKey: null, sortDir: 1, collections: [],
+  health: null, viewMode: 'list', queryViewMode: 'list', lastQueryResult: null,
+};
+
+function $(id) { return document.getElementById(id); }
+function escapeHtml(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escapeAttr(s) { return String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'"); }
+
+async function apiHealth() { return (await fetch('/health')).json(); }
+async function apiListColls() { return (await fetch('/collections')).json(); }
+async function apiQuery(sql) { return (await fetch('/query',{method:'POST',headers:{'Content-Type':'text/plain'},body:sql})).json(); }
+async function apiImport(c,t) { return (await fetch('/import?coll='+encodeURIComponent(c),{method:'POST',body:t})).json(); }
+async function apiBatch(b) { return (await fetch('/batch',{method:'POST',headers:{'Content-Type':'text/plain'},body:b})).json(); }
+
+// ==== Status ====
+async function refreshStatus() {
+  try {
+    const h=await apiHealth(); S.health=h;
+    $('status-dot').className='dot ok';
+    $('status-text').textContent=h.collections+' coll · WAL '+(h.wal_enabled?'on':'off');
+    $('db-badge').textContent=h.db;
+  } catch(e) {
+    $('status-dot').className='dot err';
+    $('status-text').textContent='disconnected';
+  }
+}
+
+// ==== Sidebar tree (like Compass) ====
+async function refreshSidebar() {
+  try {
+    const j=await apiListColls();
+    S.collections=j.collections||[];
+  } catch(e) {}
+  renderSidebar();
+}
+
+function renderSidebar() {
+  const tree=$('sidebar-tree');
+  const db=S.health?S.health.db:'hugo';
+  let html='<div class="side-tree-parent"><span class="arrow">▼</span>🗄️ '+escapeHtml(db)+'</div>';
+  if(S.collections.length===0) {
+    html+='<div class="side-empty">No collections<br><span style="font-size:10px">Use Import tab to add data</span></div>';
+  } else {
+    html+=S.collections.map(c=>
+      '<div class="coll-item'+(S.currentColl===c.name?' active':'')+'" onclick="selectCollection(\''+escapeAttr(c.name)+'\')">'+
+        '<span class="icon">📋</span>'+
+        '<span class="name">'+escapeHtml(c.name)+'</span>'+
+        '<span class="cnt">'+c.count+'</span>'+
+        '<span class="dots">⋯</span>'+
+      '</div>').join('');
+  }
+  tree.innerHTML=html;
+}
+
+function selectCollection(name) {
+  S.currentColl=name; S.docsPage=0; S.sortKey=null;
+  renderSidebar();
+  switchTab('docs');
+}
+
+// ==== Tabs + Breadcrumb ====
+function switchTab(name) {
+  document.querySelectorAll('.pane').forEach(p=>p.classList.toggle('active',p.dataset.pane===name));
+  renderBreadcrumb(name);
+  renderTabBar(name);
+  if(name==='overview') renderOverview();
+  if(name==='docs') docsReload();
+  if(name==='import'&&S.currentColl) $('import-coll').value=S.currentColl;
+}
+
+function renderBreadcrumb(tab) {
+  const db=S.health?S.health.db:'hugo';
+  let html='<a onclick="switchTab(\'overview\')">'+escapeHtml(db)+'</a>';
+  if(S.currentColl) {
+    html+='<span class="sep">›</span><a onclick="selectCollection(\''+escapeAttr(S.currentColl)+'\')">'+escapeHtml(S.currentColl)+'</a>';
+  }
+  if(tab&&tab!=='overview'&&tab!=='docs') {
+    const names={query:'Query',batch:'Batch',import:'Import'};
+    html+='<span class="sep">›</span><span class="current">'+(names[tab]||tab)+'</span>';
+  }
+  $('breadcrumb').innerHTML=html;
+}
+
+function renderTabBar(activeTab) {
+  const tabs=[
+    {id:'overview',label:'Overview'},
+    {id:'docs',label:'Documents',badge:S.currentColl?(S.collections.find(c=>c.name===S.currentColl)||{}).count||'':null},
+    {id:'query',label:'Query'},
+    {id:'batch',label:'Batch'},
+    {id:'import',label:'Import'},
+  ];
+  $('tab-bar').innerHTML=tabs.map(t=>
+    '<div class="tab-item'+(activeTab===t.id?' active':'')+'" data-tab="'+t.id+'" onclick="switchTab(\''+t.id+'\')">'+
+    t.label+
+    (t.badge!=null?'<span class="badge">'+t.badge+'</span>':'')+
+    '</div>').join('');
+}
+
+// ==== Overview ====
+function renderOverview() {
+  const h=S.health||{};
+  const colls=S.collections;
+  const total=colls.reduce((s,c)=>s+c.count,0);
+  $('overview-stats').innerHTML=
+    '<div class="stat-card"><div class="label">Database</div><div class="value" style="font-size:18px">'+escapeHtml(h.db||'—')+'</div></div>'+
+    '<div class="stat-card"><div class="label">Collections</div><div class="value">'+colls.length+'</div></div>'+
+    '<div class="stat-card"><div class="label">Total Documents</div><div class="value">'+total+'</div></div>'+
+    '<div class="stat-card"><div class="label">WAL</div><div class="value" style="color:'+(h.wal_enabled?'var(--green-darker)':'var(--text-muted)')+'">'+
+    (h.wal_enabled?'ON':'OFF')+'</div><div class="sub">Write-ahead logging</div></div>';
+  if(colls.length===0) {
+    $('overview-colls').innerHTML='<div class="empty">No collections yet. Use the Import tab to add data.</div>';
+    return;
+  }
+  $('overview-colls').innerHTML='<table><thead><tr><th>Name</th><th style="text-align:right">Documents</th><th style="text-align:right">Next ID</th><th></th></tr></thead><tbody>'+
+    colls.map(c=>'<tr><td><a style="color:var(--blue);cursor:pointer" onclick="selectCollection(\''+escapeAttr(c.name)+'\')">'+escapeHtml(c.name)+'</a></td><td class="num">'+c.count+'</td><td class="num">'+c.next_id+'</td><td><button class="btn btn-outline btn-sm" onclick="selectCollection(\''+escapeAttr(c.name)+'\')">View →</button></td></tr>').join('')+
+    '</tbody></table>';
+}
+
+// ==== Documents ====
+function setViewMode(mode) {
+  S.viewMode=mode;
+  $('view-list').className=mode==='list'?'active':'';
+  $('view-table').className=mode==='table'?'active':'';
+  renderDocsContent();
+}
+
+async function docsReload() {
+  if(!S.currentColl) { $('docs-empty').style.display='block'; $('docs-view').style.display='none'; return; }
+  $('docs-empty').style.display='none'; $('docs-view').style.display='block';
+  S.docsPerPage=parseInt($('docs-per-page').value);
+  const skip=S.docsPage*S.docsPerPage;
+  let sql='funden '+S.currentColl+' lime '+S.docsPerPage+' skopan '+skip;
+  const filter=$('docs-filter').value.trim();
+  if(filter) sql='funden '+S.currentColl+' haar '+filter+' lime '+S.docsPerPage+' skopan '+skip;
+  const r=await apiQuery(sql);
+  if(!r.ok) {
+    $('docs-table').innerHTML='<div class="result-banner err">err '+escapeHtml(r.err_code)+': '+escapeHtml(r.err_msg)+'</div>';
+    return;
+  }
+  S.docsData=r.docs||[];
+  const coll=S.collections.find(c=>c.name===S.currentColl);
+  S.docsTotal=coll?coll.count:S.docsData.length;
+  renderDocsContent(); updatePager(); renderTabBar('docs');
+}
+
+function docsApplyFilter() { S.docsPage=0; docsReload(); }
+
+function renderDocsContent() {
+  if(S.viewMode==='list') renderDocsCards(); else renderDocsTable();
+}
+
+function renderDocsCards() {
+  let docs=sortDocs(S.docsData);
+  if(docs.length===0) { $('docs-table').innerHTML='<div class="empty">No documents found</div>'; return; }
+  $('docs-table').innerHTML=docs.map(d=>{
+    let html='<div class="doc-card">';
+    for(const k of Object.keys(d)) {
+      html+='<div class="doc-field"><span class="doc-key">'+escapeHtml(k)+'</span>'+renderDocValue(d[k],k)+'</div>';
+    }
+    html+='</div>';
+    return html;
+  }).join('');
+}
+
+function renderDocValue(v,key) {
+  if(v===null||v===undefined) return '<span class="doc-val-null">null</span>';
+  if(typeof v==='number') {
+    if(key==='id') return '<span class="doc-val-id">'+v+'</span>';
+    return '<span class="doc-val-num">'+v+'</span>';
+  }
+  if(typeof v==='boolean') return '<span class="doc-val-bool">'+v+'</span>';
+  if(typeof v==='string') {
+    if(/^\d{4}-\d{2}-\d{2}T/.test(v)) return '<span class="doc-val-date">'+escapeHtml(v)+'</span>';
+    return '<span class="doc-val-str">'+escapeHtml(v)+'</span>';
+  }
+  return '<span class="doc-val-obj">Object</span>';
+}
+
+function renderDocsTable() {
+  let docs=sortDocs(S.docsData);
+  if(docs.length===0) { $('docs-table').innerHTML='<div class="empty">No documents found</div>'; return; }
+  const keys=[]; const seen=new Set();
+  for(const d of docs) for(const k of Object.keys(d)) if(!seen.has(k)){seen.add(k);keys.push(k);}
+  keys.sort((a,b)=>a==='id'?-1:b==='id'?1:0);
+  let html='<div class="table-scroll-container"><table><thead><tr>';
+  for(const k of keys) {
+    let cls='',arrow='<span class="sort-arrow">⇅</span>';
+    if(S.sortKey===k) { arrow=S.sortDir===1?'<span class="sort-arrow">▲</span>':'<span class="sort-arrow">▼</span>'; }
+    html+='<th class="'+cls+'" onclick="toggleSort(\''+escapeAttr(k)+'\')">'+escapeHtml(k)+arrow+'</th>';
+  }
+  html+='</tr></thead><tbody>';
+  for(const d of docs) {
+    html+='<tr>';
+    for(const k of keys) html+=renderTdCell(d[k],k==='id');
+    html+='</tr>';
+  }
+  html+='</tbody></table></div>';
+  $('docs-table').innerHTML=html;
+}
+
+function sortDocs(docs) {
+  if(!S.sortKey) return docs;
+  return [...docs].sort((a,b)=>{
+    const av=a[S.sortKey], bv=b[S.sortKey];
+    const aNull = (av === null || av === undefined);
+    const bNull = (bv === null || bv === undefined);
+    /* Null/undefined luôn xuống cuối cùng bất kể sort direction */
+    if(aNull && bNull) return 0;
+    if(aNull) return 1;   /* a null → a xuống dưới */
+    if(bNull) return -1;  /* b null → b xuống dưới */
+    /* Sort non-null values bình thường */
+    if(av < bv) return -S.sortDir;
+    if(av > bv) return S.sortDir;
+    return 0;
+  });
+}
+
+function toggleSort(key) {
+  if(S.sortKey===key) S.sortDir*=-1;
+  else { S.sortKey=key; S.sortDir=1; }
+  renderDocsContent();
+}
+
+function renderTdCell(v,isId) {
+  if(v===null||v===undefined) return '<td class="null">null</td>';
+  if(typeof v==='number') return '<td class="num'+(isId?' id-col':'')+'">'+v+'</td>';
+  if(typeof v==='boolean') return '<td class="bool">'+v+'</td>';
+  if(typeof v==='string') return '<td class="str">'+escapeHtml(v)+'</td>';
+  return '<td>'+escapeHtml(JSON.stringify(v))+'</td>';
+}
+
+function updatePager() {
+  const start=S.docsPage*S.docsPerPage+1;
+  const end=Math.min(start+S.docsPerPage-1,S.docsTotal);
+  const tp=Math.max(1,Math.ceil(S.docsTotal/S.docsPerPage));
+  $('docs-page-info').textContent=start+' – '+end+' of '+S.docsTotal;
+  $('docs-count-info').textContent='Showing '+S.docsData.length+' documents from "'+S.currentColl+'"';
+  $('docs-prev').disabled=S.docsPage===0;
+  $('docs-next').disabled=(S.docsPage+1)*S.docsPerPage>=S.docsTotal;
+}
+
+function docsPage(d) { S.docsPage=Math.max(0,S.docsPage+d); docsReload(); }
+
+// ==== Query ====
+function setQueryViewMode(mode) {
+  S.queryViewMode = mode;
+  $('qview-list').className = mode==='list' ? 'active' : '';
+  $('qview-table').className = mode==='table' ? 'active' : '';
+  if (S.lastQueryResult) $('query-result').innerHTML = renderQueryResult(S.lastQueryResult);
+}
+
+async function runQuery() {
+  const q=$('query').value.trim(); if(!q) return;
+  $('query-result').innerHTML='<div class="result-banner info">executing...</div>';
+  try {
+    const r=await apiQuery(q);
+    S.lastQueryResult = r;
+    $('query-result').innerHTML=renderQueryResult(r);
+    refreshStatus(); refreshSidebar();
+  } catch(e) {
+    S.lastQueryResult = null;
+    $('query-result').innerHTML='<div class="result-banner err">Network error: '+escapeHtml(e.message)+'</div>';
+  }
+}
+
+function renderQueryResult(r) {
+  if(!r.ok) return '<div class="result-banner err">err '+escapeHtml(r.err_code||'?')+' — '+escapeHtml(r.err_msg||'')+'</div>';
+  let html='<div class="result-banner ok">✓ '+r.count+' document'+(r.count===1?'':'s')+(r.info?' · '+escapeHtml(r.info):'')+'</div>';
+  if(r.docs&&r.docs.length>0) {
+    if (S.queryViewMode === 'table') {
+      html += renderQueryResultTable(r.docs);
+    } else {
+      html+=r.docs.map(d=>{
+        let h='<div class="doc-card">';
+        for(const k of Object.keys(d)) h+='<div class="doc-field"><span class="doc-key">'+escapeHtml(k)+'</span>'+renderDocValue(d[k],k)+'</div>';
+        return h+'</div>';
+      }).join('');
+    }
+  }
+  return html;
+}
+
+function renderQueryResultTable(docs) {
+  const keys=[]; const seen=new Set();
+  for(const d of docs) for(const k of Object.keys(d)) if(!seen.has(k)){seen.add(k);keys.push(k);}
+  keys.sort((a,b)=>a==='id'?-1:b==='id'?1:0);
+  let html='<div class="table-scroll-container"><table><thead><tr>';
+  for(const k of keys) html+='<th style="cursor:default">'+escapeHtml(k)+'</th>';
+  html+='</tr></thead><tbody>';
+  for(const d of docs) {
+    html+='<tr>';
+    for(const k of keys) html+=renderTdCell(d[k],k==='id');
+    html+='</tr>';
+  }
+  html+='</tbody></table></div>';
+  return html;
+}
+
+function setQuery(q) { $('query').value=q; switchTab('query'); $('query').focus(); }
+
+// ==== Batch ====
+async function runBatch() {
+  const b=$('batch-text').value; if(!b.trim()) return;
+  $('batch-result').innerHTML='<div class="result-banner info">running batch...</div>';
+  try {
+    const r=await apiBatch(b);
+    $('batch-result').innerHTML=renderBatchResult(r);
+    refreshStatus(); refreshSidebar();
+  } catch(e) {
+    $('batch-result').innerHTML='<div class="result-banner err">Network error</div>';
+  }
+}
+
+function renderBatchResult(r) {
+  let html='<div class="result-banner ok">'+r.ok_count+'/'+r.total+' ok · '+r.err_count+' err · '+r.total_sec.toFixed(3)+'s total</div>';
+  html+='<div class="batch-stats">'+
+    '<div class="batch-stat"><div class="k">Total</div><div class="v">'+r.total+'</div></div>'+
+    '<div class="batch-stat"><div class="k">Avg ms</div><div class="v">'+r.avg_ms.toFixed(3)+'</div></div>'+
+    '<div class="batch-stat"><div class="k">Min ms</div><div class="v">'+r.min_ms.toFixed(3)+'</div></div>'+
+    '<div class="batch-stat"><div class="k">Max ms</div><div class="v">'+r.max_ms.toFixed(3)+'</div></div>'+
+    '<div class="batch-stat"><div class="k">p50 ms</div><div class="v">'+r.p50_ms.toFixed(3)+'</div></div>'+
+    '<div class="batch-stat"><div class="k">p95 ms</div><div class="v">'+r.p95_ms.toFixed(3)+'</div></div>'+
+    '<div class="batch-stat"><div class="k">p99 ms</div><div class="v">'+r.p99_ms.toFixed(3)+'</div></div>'+
+  '</div>';
+  if(r.results&&r.results.length>0) {
+    html+='<table><thead><tr><th>#</th><th>Query</th><th style="text-align:right">Time (ms)</th><th>Result</th></tr></thead><tbody>';
+    r.results.forEach((item,i)=>{
+      const ok=item.result&&item.result.ok;
+      const info=ok?'<span style="color:var(--green-darker)">✓ '+item.result.count+' doc'+(item.result.count===1?'':'s')+(item.result.info?' · '+escapeHtml(item.result.info):'')+'</span>':'<span style="color:var(--red)">✗ '+escapeHtml(item.result.err_code||'?')+'</span>';
+      html+='<tr><td class="num">'+(i+1)+'</td><td style="font-family:var(--mono);font-size:12px">'+escapeHtml(item.query)+'</td><td class="num">'+item.ms.toFixed(3)+'</td><td>'+info+'</td></tr>';
+    });
+    html+='</tbody></table>';
+  }
+  return html;
+}
+
+function loadBatchSample() {
+  $('batch-text').value='-- Sample batch\nmadeco demo\nvietinfo demo { name: "Alice", age: 25 }\nvietinfo demo { name: "Bob", age: 30 }\nvietinfo demo { name: "Carol", age: 28 }\nfunden demo\nfunden demo haar age $bh 26\nfunden demo orange bi age desc lime 2\nskill demo';
+}
+
+// ==== Import ====
+async function doImport(coll,text) {
+  $('import-result').innerHTML='<div class="result-banner info">Uploading '+text.length+' bytes...</div>';
+  try {
+    const r=await apiImport(coll,text);
+    if(!r.ok) { $('import-result').innerHTML='<div class="result-banner err">'+r.err_code+': '+r.err_msg+'</div>'; return; }
+    $('import-result').innerHTML=
+      '<div class="result-banner ok">✓ Imported '+r.docs_inserted+' / '+r.lines_read+' lines into "'+escapeHtml(r.coll)+'"</div>'+
+      '<div class="batch-stats">'+
+        '<div class="batch-stat"><div class="k">Lines</div><div class="v">'+r.lines_read+'</div></div>'+
+        '<div class="batch-stat"><div class="k">Inserted</div><div class="v" style="color:var(--green-darker)">'+r.docs_inserted+'</div></div>'+
+        '<div class="batch-stat"><div class="k">Parse err</div><div class="v" style="color:'+(r.parse_errors?'var(--red)':'var(--text-muted)')+'">'+r.parse_errors+'</div></div>'+
+        '<div class="batch-stat"><div class="k">Elapsed</div><div class="v">'+r.elapsed_sec.toFixed(3)+'s</div></div>'+
+        '<div class="batch-stat"><div class="k">Rate</div><div class="v">'+(r.elapsed_sec>0?Math.round(r.docs_inserted/r.elapsed_sec):'—')+' doc/s</div></div>'+
+      '</div>';
+    refreshAll();
+  } catch(e) { $('import-result').innerHTML='<div class="result-banner err">Network error</div>'; }
+}
+
+function handleDrop(ev) {
+  ev.preventDefault(); $('dropzone').classList.remove('drag');
+  const f=ev.dataTransfer.files[0]; if(f) readAndImport(f);
+}
+function handleFileInput(ev) { const f=ev.target.files[0]; if(f) readAndImport(f); }
+function readAndImport(f) {
+  const c=$('import-coll').value.trim();
+  if(!c) { $('import-result').innerHTML='<div class="result-banner err">Please enter collection name first</div>'; return; }
+  const r=new FileReader(); r.onload=()=>doImport(c,r.result); r.readAsText(f);
+}
+function importPasted() {
+  const c=$('import-coll').value.trim(), t=$('import-text').value;
+  if(!c) { $('import-result').innerHTML='<div class="result-banner err">Please enter collection name first</div>'; return; }
+  if(!t.trim()) return;
+  doImport(c,t);
+}
+
+// ==== Init ====
+async function refreshAll() { await refreshStatus(); await refreshSidebar(); }
+$('query').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();runQuery();}});
+$('batch-text').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();runBatch();}});
+(async()=>{
+  await refreshAll();
+  switchTab('overview');
+  setInterval(refreshStatus,15000);
+})();
+</script>
+</body>
+</html>
